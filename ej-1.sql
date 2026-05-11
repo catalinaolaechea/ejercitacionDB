@@ -60,3 +60,20 @@ group by rubr_detalle
 -- Mostrar cuántos depósitos tiene asignado cada encargado.
 select empl_nombre, empl_apellido, count(*) from Empleado join DEPOSITO on depo_encargado = empl_codigo
 group by empl_nombre, empl_apellido
+
+-- BLOQUE 4
+-- Mostrar los productos cuyo stock total sea mayor a 1000
+
+select prod_codigo, prod_detalle, sum(stoc_cantidad) as total_stock from Producto inner join STOCK on stoc_producto = prod_codigo
+group by prod_codigo, prod_detalle
+having sum(stoc_cantidad) > 1000
+
+-- Mostrar los clientes que hicieron más de 5 facturas.
+select clie_codigo as cliente ,count(*) as cantidad_de_facturas from Cliente inner join Factura on clie_codigo = fact_cliente
+group by clie_codigo 
+having count(*) > 5
+
+-- Mostrar los productos que se vendieron más de 100 unidades en total.
+select prod_codigo, prod_detalle info_producto , sum(item_cantidad) as cantidad_total from Producto inner join Item_Factura on item_producto = prod_codigo
+group by  prod_codigo, prod_detalle 
+having sum(item_cantidad) > 100
