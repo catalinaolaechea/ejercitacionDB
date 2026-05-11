@@ -77,3 +77,47 @@ having count(*) > 5
 select prod_codigo, prod_detalle info_producto , sum(item_cantidad) as cantidad_total from Producto inner join Item_Factura on item_producto = prod_codigo
 group by  prod_codigo, prod_detalle 
 having sum(item_cantidad) > 100
+
+-- BLOQUE 5
+-- Mostrar los productos cuyo precio sea mayor al precio promedio de todos los productos.
+
+select prod_detalle as producto, prod_precio as precio from Producto 
+where prod_precio > (
+	select AVG(prod_precio) from Producto
+)
+
+-- Mostrar los empleados que ganan más que el promedio de su departamento.
+select empl_nombre, empl_apellido from Empleado as e
+where empl_salario > (
+	select avg(empl_salario) from Empleado
+	where empl_departamento = e.empl_departamento
+)
+
+-- TOP siempre va con ORDER BY
+
+-- Mostrar los clientes que compraron algo en el año 2012 (CONSULTAR)
+select clie_codigo from Cliente
+where (select count(fact_numero) from Factura where fact_cliente = clie_codigo and year(fact_fecha) = 2012 ) >= 1
+
+select clie_codigo as cliente from Cliente 
+inner join Factura on fact_cliente = clie_codigo
+where year(fact_fecha) = 2012 
+group by clie_codigo
+
+
+-- BLOQUE 6 
+-- Mostrar el producto más caro de toda la base.
+
+select TOP 1 prod_codigo, prod_detalle, prod_precio from Producto 
+where prod_precio > (
+	select avg(prod_precio) from Producto
+)
+order by prod_precio desc
+
+-- Mostrar el cliente que más dinero gastó en total (complicado)
+select top 1 clie_codigo, sum(fact_total) as total_gastado from Cliente 
+inner join Factura on fact_cliente = clie_codigo  
+group by clie_codigo
+order by 2 desc
+
+-- Mostrar el depósito con mayor stock total.
