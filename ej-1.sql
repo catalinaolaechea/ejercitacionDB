@@ -121,3 +121,49 @@ group by clie_codigo
 order by 2 desc
 
 -- Mostrar el depósito con mayor stock total.
+
+
+-- Mostrar para el o los artículos que tengan stock en todos los depósitos, nombre del 
+-- artículo, stock del depósito que más stock tiene. 
+
+select stoc_producto , max(stoc_cantidad)
+from STOCK 
+where stoc_producto in (
+	select stoc_producto
+	from stock 
+	group by stoc_producto
+	having count(distinct stoc_deposito) = (
+		select count(*) from deposito
+	)
+)
+GROUP BY stoc_producto
+
+-- Mostrar el cliente que realizó la compra de mayor importe.
+-- Mostrar: código de cliente, número de factura, total de la factura
+select fact_cliente, fact_numero, fact_total from Factura 
+where fact_total = (select max(fact_total) from Factura)
+
+-- Mostrar los clientes que compraron en TODOS los años registrados en la tabla Factura.
+-- Mostrar: código de cliente, cantidad de años distintos en que compró
+select fact_cliente, count(distinct year(fact_fecha)) as antiguedad  from Factura 
+group by fact_cliente
+having count(distinct year(fact_fecha)) = ( 
+	select count(distinct year(fact_fecha)) from Factura 
+)
+
+-- Mostrar el código del jefe, código del empleado que lo tiene como jefe, nombre del 
+-- mismo y la cantidad de depósitos que ambos tienen asignados. 
+
+select empl.empl_codigo, empl.empl_nombre , jefe.empl_jefe, 
+count(distinct depo_jefe.depo_codigo) as depositos_jefe, count(distinct depo_empl.depo_codigo) as depositos_empl 
+from Empleado empl inner join Empleado jefe on empl.empl_jefe = jefe.empl_codigo
+left join DEPOSITO depo_empl on empl.empl_codigo = depo_empl.depo_encargado
+left join DEPOSITO depo_jefe on jefe.empl_codigo = depo_jefe.depo_encargado
+group by empl.empl_codigo, empl.empl_nombre , jefe.empl_jefe 
+
+/*
+Mostrar los 10 productos más vendidos en la historia y también los 10 productos menos 
+vendidos en la historia. Además mostrar de esos productos, quien fue el cliente que 
+mayor compra realizo. 
+*/
+
