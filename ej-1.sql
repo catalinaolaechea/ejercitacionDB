@@ -167,3 +167,23 @@ vendidos en la historia. Además mostrar de esos productos, quien fue el cliente
 mayor compra realizo. 
 */
 
+
+select 
+    empl.empl_codigo, 
+    empl.empl_nombre , 
+    jefe.empl_codigo, 
+count(distinct depo_jefe.depo_codigo) + count(distinct depo_empl.depo_codigo) as depositos_empl 
+from Empleado empl 
+    inner join Empleado jefe 
+        on empl.empl_jefe = jefe.empl_codigo
+    left join DEPOSITO depo_jefe 
+        on jefe.empl_codigo = depo_jefe.depo_encargado
+    left join DEPOSITO depo_empl 
+        on empl.empl_codigo = depo_empl.depo_encargado
+
+group by 
+    empl.empl_codigo, 
+    empl.empl_nombre , 
+    jefe.empl_codigo
+
+select * from Empleado
